@@ -1,14 +1,17 @@
 public class Action {
 
-    public double withdrawMoney(String accountNumber, double transactionAmount) {
+    public static double withdrawMoney(String accountNumber, double transactionAmount) {
+        // TODO: check for sufficient funds and credit user's account balance after withdrawing and display balance
         return 0;
     }
 
-    public double checkBalance(String accountNumber) {
+    public static double checkBalance(String accountNumber) {
+        // TODO: display user's account balance
         return 0;
     }
 
-    public double depositMoney(String accountNumber, double transactionAmount) {
+    public static double depositMoney(String accountNumber, double transactionAmount) {
+        // TODO: deposit money and debit user's account balance and display balance
         return 0;
     }
 }

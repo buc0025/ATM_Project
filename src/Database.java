@@ -9,30 +9,21 @@ public class Database {
         accountMap = new HashMap<>();
         AccountHolder accountHolder1 = new AccountHolder("Stanley", "Yang");
         Account account1 = new Account(/*accountHolder*/accountHolder1,/*accountType*/"savings", /*accountNumber*/"1",
-                /*pinNumber*/"11", /*accountBalance*/100, /*lockedAccount*/false, /*attempts*/0);
+                /*pinNumber*/"11", /*accountBalance*/100);
 //        Account account2 = new Account("checking", "2", "22", 100, false, 0);
 //        Account account3 = new Account("savings", "3", "33", 100, false, 0);
 
         accountHolder1.addAccount(account1);
         accountMap.put(account1.getAccountNumber(), account1);
 
-
     }
 
     public boolean verifyAccountNumber(String accountNumber) {
-        if (accountMap.containsKey(accountNumber)) {
-            return true;
-        } else {
-            return false;
-        }
+        return accountMap.containsKey(accountNumber);
     }
 
     public boolean authenticateAccount(String accountNumber, String pinNumber) {
-        if (accountMap.get(accountNumber).getPinNumber().equals(pinNumber)) {
-            return true;
-        } else {
-            return false;
-        }
+        return accountMap.get(accountNumber).getPinNumber().equals(pinNumber);
     }
 
     public double checkBalance(String accountNumber) {
@@ -48,17 +39,16 @@ public class Database {
     }
 
     public double withdraw(String accountNumber, double transactionAmount) {
-        accountMap.get(accountNumber).setAccountBalance(checkBalance(accountNumber) - transactionAmount);
+        accountMap.get(accountNumber).creditAccountBalance(transactionAmount);
         return accountMap.get(accountNumber).getAccountBalance();
     }
 
     public double deposit(String accountNumber, double transactionAmount) {
-        accountMap.get(accountNumber).setAccountBalance(checkBalance(accountNumber) + transactionAmount);
-//        return accountMap.get(accountNumber).getAccountBalance() + transactionAmount;
+        accountMap.get(accountNumber).debitAccountBalance(transactionAmount);
         return accountMap.get(accountNumber).getAccountBalance();
     }
 
-    public boolean lockedAccountStatus(String accountNumber) {
+    public boolean isAccountLocked(String accountNumber) {
         return accountMap.get(accountNumber).isAccountLocked();
     }
 }

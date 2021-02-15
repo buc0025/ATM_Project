@@ -4,17 +4,15 @@ public class Account {
     private String accountNumber;
     private String pinNumber;
     private double accountBalance;
-    private boolean lockedAccount;
     private int attempts;
 
-    public Account(AccountHolder user, String accountType, String accountNumber, String pinNumber, double accountBalance, boolean lockedAccount, int attempts) {
+    public Account(AccountHolder user, String accountType, String accountNumber, String pinNumber, double accountBalance) {
         this.user = user;
         this.accountType = accountType;
         this.accountNumber = accountNumber;
         this.pinNumber = pinNumber;
         this.accountBalance = accountBalance;
-        this.lockedAccount = lockedAccount;
-        this.attempts = attempts;
+        attempts = 0;
     }
 
     public String getUserName() {
@@ -37,16 +35,16 @@ public class Account {
         return accountBalance;
     }
 
-    public void setAccountBalance(double accountBalance) {
-        this.accountBalance = accountBalance;
+    public void debitAccountBalance(double transactionAmount) {
+        accountBalance = accountBalance + transactionAmount;
+    }
+
+    public void creditAccountBalance(double transactionAmount) {
+        accountBalance = accountBalance - transactionAmount;
     }
 
     public boolean isAccountLocked() {
-        return lockedAccount;
-    }
-
-    public void setLockedAccount(boolean lockedAccount) {
-        this.lockedAccount = lockedAccount;
+        return attempts >= 3;
     }
 
     public int getAttempts() {
@@ -54,10 +52,10 @@ public class Account {
     }
 
     public void resetAttempts() {
-
+        attempts = 0;
     }
 
-    public void setAttempts(int attempts) {
-        this.attempts = attempts;
+    public void incrementAttempts() {
+        attempts++;
     }
 }
