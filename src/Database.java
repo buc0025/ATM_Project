@@ -38,14 +38,12 @@ public class Database {
         }
     }
 
-    public double withdraw(String accountNumber, double transactionAmount) {
+    public void withdraw(String accountNumber, double transactionAmount) {
         accountMap.get(accountNumber).creditAccountBalance(transactionAmount);
-        return accountMap.get(accountNumber).getAccountBalance();
     }
 
-    public double deposit(String accountNumber, double transactionAmount) {
+    public void deposit(String accountNumber, double transactionAmount) {
         accountMap.get(accountNumber).debitAccountBalance(transactionAmount);
-        return accountMap.get(accountNumber).getAccountBalance();
     }
 
     public boolean isAccountLocked(String accountNumber) {

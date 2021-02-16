@@ -37,10 +37,19 @@ public class Account {
 
     public void debitAccountBalance(double transactionAmount) {
         accountBalance = accountBalance + transactionAmount;
+        System.out.println("You have deposited " + transactionAmount +
+                "\nYour account balance is: " + accountBalance + "\n");
     }
 
     public void creditAccountBalance(double transactionAmount) {
-        accountBalance = accountBalance - transactionAmount;
+        if (transactionAmount > accountBalance || accountBalance < 20) {
+            System.out.println("Your account has insufficient funds for withdrawal.\n" +
+                    "Your available balance is: " + accountBalance + "\n");
+        } else {
+            accountBalance = accountBalance - transactionAmount;
+            System.out.println("You have withdrawn " + transactionAmount +
+                    "\nYour account balance is: " + accountBalance + "\n");
+        }
     }
 
     public boolean isAccountLocked() {
