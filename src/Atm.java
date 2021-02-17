@@ -13,7 +13,9 @@ public class Atm {
         TRANSACTION,
         CHECK_BALANCE,
         MAKE_DEPOSIT,
-        MAKE_WITHDRAWAL;
+        WITHDRAWAL_OPTIONS,
+        CUSTOM_WITHDRAWAL,
+        OPTIONS_AFTER_WITHDRAWAL;
     }
 
     public Atm() {
@@ -25,6 +27,9 @@ public class Atm {
         accountNumber = "";
     }
 
+    /**
+     * Each screen will prompt user for a response
+     */
     public void run() {
         while (true) {
             switch (currentScreen) {
@@ -40,8 +45,14 @@ public class Atm {
                 case MAKE_DEPOSIT:
                     promptForDepositScreen();
                     break;
-                case MAKE_WITHDRAWAL:
-                    promptForWithdrawlDenominations();
+                case WITHDRAWAL_OPTIONS:
+                    promptForWithdrawalDenominations();
+                    break;
+                case CUSTOM_WITHDRAWAL:
+                    promptCustomWithdrawal();
+                    break;
+                case OPTIONS_AFTER_WITHDRAWAL:
+                    promptAfterWithdrawal();
                     break;
                 default:
                     System.out.println("Wrong screen " + currentScreen);
@@ -95,8 +106,11 @@ public class Atm {
         }
     }
 
+    /**
+     * User is asked whether they want to check balance, make a deposit, withdraw money, or exit.
+     */
     public void promptForTransactionMenu() {
-        System.out.println("Press 1 to check acount balance \n" +
+        System.out.println("Press 1 to check account balance \n" +
                 "Press 2 to make a deposit \n" +
                 "Press 3 to make a withdrawal \n" +
                 "Press 4 to exit");
@@ -105,19 +119,19 @@ public class Atm {
 
         if (selection == 1) {
             currentScreen = AtmScreens.CHECK_BALANCE;
-            promptForCheckBalanceScreen();
         } else if (selection == 2) {
             currentScreen = AtmScreens.MAKE_DEPOSIT;
-            promptForDepositScreen();
         } else if (selection == 3) {
-            currentScreen = AtmScreens.MAKE_WITHDRAWAL;
-            promptForWithdrawlDenominations();
+            currentScreen = AtmScreens.WITHDRAWAL_OPTIONS;
         } else {
+            System.out.println("Goodbye " + database.accountMap.get(accountNumber).getUserName());
             currentScreen = AtmScreens.LOGIN;
-            authenticateAccount();
         }
     }
 
+    /**
+     * Displays account balance and given the option to go back to main menu or exit.
+     */
     public void promptForCheckBalanceScreen() {
         System.out.println("Your current account balance is: " + database.checkBalance(accountNumber) +
                 "\n\nPress 1 to go back to main menu \n" +
@@ -127,13 +141,14 @@ public class Atm {
 
         if (selection == 1) {
             currentScreen = AtmScreens.TRANSACTION;
-            promptForTransactionMenu();
         } else {
             currentScreen = AtmScreens.LOGIN;
-            authenticateAccount();
         }
     }
 
+    /**
+     * Asks user for the amount the would like to deposit and tells them the new balance afterwards
+     */
     public void promptForDepositScreen() {
         System.out.println("Please enter deposit amount: ");
 
@@ -149,19 +164,19 @@ public class Atm {
 
         if (selection == 1) {
             currentScreen = AtmScreens.MAKE_DEPOSIT;
-            promptForDepositScreen();
         } else if (selection == 2){
             currentScreen = AtmScreens.TRANSACTION;
-            promptForTransactionMenu();
         } else {
             currentScreen = AtmScreens.LOGIN;
-            authenticateAccount();
         }
 
     }
 
-    public void promptForWithdrawlDenominations() {
-        // TODO: give options of how much to withdraw and wait for input
+    /**
+     * Gives user a few choices of how much to withdraw along with option to make a specific withdrawal amount and to
+     * go back to previous screen. New account balance will be displayed after withdrawal.
+     */
+    public void promptForWithdrawalDenominations() {
         System.out.println("Press 1 to withdraw $20 \n" +
                 "Press 2 to withdraw $40 \n" +
                 "Press 3 to withdraw $60 \n" +
@@ -175,61 +190,60 @@ public class Atm {
 
         switch (selection) {
             case 1:
-                currentScreen = AtmScreens.MAKE_WITHDRAWAL;
+                currentScreen = AtmScreens.OPTIONS_AFTER_WITHDRAWAL;
                 database.withdraw(accountNumber, 20);
-                promptAfterWithdrawal();
                 break;
             case 2:
-                currentScreen = AtmScreens.MAKE_WITHDRAWAL;
+                currentScreen = AtmScreens.OPTIONS_AFTER_WITHDRAWAL;
                 database.withdraw(accountNumber, 40);
-                promptAfterWithdrawal();
                 break;
             case 3:
-                currentScreen = AtmScreens.MAKE_WITHDRAWAL;
+                currentScreen = AtmScreens.OPTIONS_AFTER_WITHDRAWAL;
                 database.withdraw(accountNumber, 60);
-                promptAfterWithdrawal();
                 break;
             case 4:
-                currentScreen = AtmScreens.MAKE_WITHDRAWAL;
+                currentScreen = AtmScreens.OPTIONS_AFTER_WITHDRAWAL;
                 database.withdraw(accountNumber, 80);
-                promptAfterWithdrawal();
                 break;
             case 5:
-                currentScreen = AtmScreens.MAKE_WITHDRAWAL;
+                currentScreen = AtmScreens.OPTIONS_AFTER_WITHDRAWAL;
                 database.withdraw(accountNumber, 100);
-                promptAfterWithdrawal();
                 break;
             case 6:
-                currentScreen = AtmScreens.MAKE_WITHDRAWAL;
+                currentScreen = AtmScreens.OPTIONS_AFTER_WITHDRAWAL;
                 database.withdraw(accountNumber, 200);
-                promptAfterWithdrawal();
                 break;
             case 7:
-                currentScreen = AtmScreens.MAKE_WITHDRAWAL;
-                promptCustomWithdrawal();
+                currentScreen = AtmScreens.CUSTOM_WITHDRAWAL;
                 break;
             case 8:
                 currentScreen = AtmScreens.TRANSACTION;
-                promptForTransactionMenu();
                 break;
         }
     }
 
+    /**
+     * Asks user to withdraw an amount that's not listed in the WITHDRAWAL_OPTIONS screen. Amount has to be in
+     * denominations of $20
+     */
     public void promptCustomWithdrawal() {
         System.out.println("Withdrawal amount must be denominations of $20 \n" + "Please enter withdrawal amount: ");
 
         double amount = input.nextInt();
 
-        currentScreen = AtmScreens.MAKE_WITHDRAWAL;
+        currentScreen = AtmScreens.WITHDRAWAL_OPTIONS;
 
         if (amount % 20 != 0) {
-            promptCustomWithdrawal();
+            currentScreen = AtmScreens.CUSTOM_WITHDRAWAL;
         } else {
+            currentScreen = AtmScreens.OPTIONS_AFTER_WITHDRAWAL;
             database.withdraw(accountNumber, amount);
-            promptAfterWithdrawal();
         }
     }
 
+    /**
+     * Asks user what they want to do after they have made a withdrawal
+     */
     public void promptAfterWithdrawal() {
         System.out.println("Press 1 to make another withdrawal \n" +
                 "Press 2 to go back to main menu \n" +
@@ -238,14 +252,18 @@ public class Atm {
         int selection = input.nextInt();
 
         if (selection == 1) {
-            currentScreen = AtmScreens.MAKE_WITHDRAWAL;
-            promptForWithdrawlDenominations();
+            currentScreen = AtmScreens.WITHDRAWAL_OPTIONS;
         } else if (selection == 2){
             currentScreen = AtmScreens.TRANSACTION;
-            promptForTransactionMenu();
         } else {
             currentScreen = AtmScreens.LOGIN;
-            authenticateAccount();
         }
+    }
+
+    /**
+     * Displays randomly generated account numbers to test before run() is called
+     */
+    public void displayAccountsTest() {
+        System.out.println(database.accountNumbers);
     }
 }
