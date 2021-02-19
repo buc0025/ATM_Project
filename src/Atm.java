@@ -73,36 +73,39 @@ public class Atm {
     public void authenticateAccount() {
         System.out.println("Please enter account number:");
         String acctNumber = input.next();
-
         accountExists = database.verifyAccountNumber(acctNumber);
 
-        if (accountExists) {
-            accountNumber = acctNumber;
-            if (database.isAccountLocked(accountNumber)) {
-                System.out.println("Account is locked. Please contact support.");
-                accountExists = false;
-            } else { // Valid account and is not locked
-                System.out.println("Please enter pin number:");
-                String pinNumber = input.next();
-
-                if (database.authenticateAccount(accountNumber, pinNumber)) { // Account number and pin matches
-                    database.accountMap.get(accountNumber).resetAttempts();
-                    currentScreen = AtmScreens.TRANSACTION;
-                    accountExists = true;
-                } else { // Pin number does not match account number
-                    accountExists = false;
-                    database.accountMap.get(accountNumber).incrementAttempts();
-                    if (database.accountMap.get(accountNumber).isAccountLocked()) {
-                        System.out.println("Too many attempts. Account locked. Please contact support.");
-                        currentScreen = AtmScreens.LOGIN;
-                    } else {
-                        System.out.println("Incorrect login. Please try again.");
-                        currentScreen = AtmScreens.LOGIN;
-                    }
-                }
-            }
-        } else {
+        if (!accountExists) {
             System.out.println("Invalid account number. Please try again.");
+            return;
+        }
+
+        if (database.isAccountLocked(acctNumber)) {
+            System.out.println("Account is locked. Please contact support.");
+            return;
+        }
+
+        accountNumber = acctNumber;
+        System.out.println("Please enter pin number:");
+        String pinNumber = input.next();
+        database.accountMap.get(accountNumber).incrementAttempts(); // Attempts at logging into account is incremented
+
+        if (database.authenticateAccount(accountNumber, pinNumber)) { // Account number and pin matches
+            database.accountMap.get(accountNumber).resetAttempts();
+            currentScreen = AtmScreens.TRANSACTION;
+            accountExists = true;
+        }
+
+        if (!database.authenticateAccount(accountNumber, pinNumber)) { // Account number and pin doesn't match
+            if (database.accountMap.get(accountNumber).isAccountLocked()) { // 3 incorrect attempts at logging in
+                accountExists = false;
+                currentScreen = AtmScreens.LOGIN;
+                System.out.println("Too many attempts. Account locked. Please contact support");
+            } else {
+                accountExists = false;
+                System.out.println("Incorrect login. Please try again.");
+                currentScreen = AtmScreens.LOGIN;
+            }
         }
     }
 

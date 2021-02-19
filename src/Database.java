@@ -22,7 +22,7 @@ public class Database {
         accountMap.put(account1.getAccountNumber(), account1);
         accountMap.put(account2.getAccountNumber(), account2);
 
-        accountNumbers.put(account1.getAccountNumber(), account1.getUserName());
+        accountNumbers.put(account1.getAccountNumber() + " pin: " + account1.getPinNumber(), account1.getUserName());
         accountNumbers.put(account2.getAccountNumber(), account2.getUserName());
 
     }
