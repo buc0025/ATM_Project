@@ -1,18 +1,17 @@
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public class Database {
-    public Map<String, Account> accountMap;
-    public Map<String, String> accountNumbers;
+class Database {
+    Map<String, Account> accountMap;
+    Map<String, String> accountNumbers;
 
-    public Database() {
+    Database() {
         accountMap = new HashMap<>();
         accountNumbers = new HashMap<>();
 
         AccountHolder accountHolder1 = new AccountHolder("Stanley", "Yang");
-        Account account1 = new Account(/*accountHolder*/accountHolder1,/*accountType*/"savings", /*accountNumber*/createAccountNumber(),
+        Account account1 = new Account(/*accountHolder*/accountHolder1,/*accountType*/"savings", /*accountNumber*/"1",
                 /*pinNumber*/"11", /*accountBalance*/100);
         Account account2 = new Account(/*accountHolder*/accountHolder1,/*accountType*/"savings", /*accountNumber*/createAccountNumber(),
                 /*pinNumber*/"22", /*accountBalance*/150);
@@ -32,7 +31,7 @@ public class Database {
      * @param accountNumber user's account number
      * @return boolean whether database contains account number
      */
-    public boolean verifyAccountNumber(String accountNumber) {
+    boolean verifyAccountNumber(String accountNumber) {
         return accountMap.containsKey(accountNumber);
     }
 
@@ -43,7 +42,7 @@ public class Database {
      * @param pinNumber user's pin number
      * @return boolean whether pin number matches account number
      */
-    public boolean authenticateAccount(String accountNumber, String pinNumber) {
+    boolean authenticateAccount(String accountNumber, String pinNumber) {
         return accountMap.get(accountNumber).getPinNumber().equals(pinNumber);
     }
 
@@ -52,7 +51,7 @@ public class Database {
      * @param accountNumber user's account number
      * @return account balance
      */
-    public double checkBalance(String accountNumber) {
+    double checkBalance(String accountNumber) {
         return accountMap.get(accountNumber).getAccountBalance();
     }
 
@@ -62,7 +61,7 @@ public class Database {
      * @param accountNumber user's account number
      * @param transactionAmount withdrawal amount
      */
-    public void withdraw(String accountNumber, double transactionAmount) {
+    void withdraw(String accountNumber, double transactionAmount) {
         accountMap.get(accountNumber).creditAccountBalance(transactionAmount);
     }
 
@@ -71,7 +70,7 @@ public class Database {
      * @param accountNumber user's account number
      * @param transactionAmount deposit amount
      */
-    public void deposit(String accountNumber, double transactionAmount) {
+    void deposit(String accountNumber, double transactionAmount) {
         accountMap.get(accountNumber).debitAccountBalance(transactionAmount);
     }
 
@@ -80,7 +79,7 @@ public class Database {
      * @param accountNumber user's account number
      * @return boolean value if user is locked out of account
      */
-    public boolean isAccountLocked(String accountNumber) {
+    boolean isAccountLocked(String accountNumber) {
         return accountMap.get(accountNumber).isAccountLocked();
     }
 
@@ -88,7 +87,7 @@ public class Database {
      * Method generates random 6 digit number that will be used as an account number
      * @return random number from 100,000 to 999,999
      */
-    public String createAccountNumber() {
+    String createAccountNumber() {
         Random random = new Random();
         int n = 100000 + random.nextInt(899999);
         return String.valueOf(n);

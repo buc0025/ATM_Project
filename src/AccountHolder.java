@@ -2,36 +2,36 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class AccountHolder {
+class AccountHolder {
     private String firstName;
     private String lastName;
     private UUID uuid;
     private List<Account> accounts;
 
-    public AccountHolder(String firstName, String lastName) {
+    AccountHolder(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
         accounts = new ArrayList<>();
         uuid = UUID.randomUUID();
     }
 
-    public String getFirstName() {
+    String getFirstName() {
         return firstName;
     }
 
-    public String getLastName() {
+    String getLastName() {
         return lastName;
     }
 
-    public void addAccount(Account account) {
+    void addAccount(Account account) {
         accounts.add(account);
     }
 
-    public UUID getUuid() {
+    UUID getUuid() {
         return uuid;
     }
 
-    public List<Account> getAccounts() {
+    List<Account> getAccounts() {
         return accounts;
     }
 }

@@ -1,4 +1,4 @@
-public class Account {
+class Account {
     private AccountHolder user;
     private String accountType;
     private String accountNumber;
@@ -6,7 +6,7 @@ public class Account {
     private double accountBalance;
     private int attempts;
 
-    public Account(AccountHolder user, String accountType, String accountNumber, String pinNumber, double accountBalance) {
+    Account(AccountHolder user, String accountType, String accountNumber, String pinNumber, double accountBalance) {
         this.user = user;
         this.accountType = accountType;
         this.accountNumber = accountNumber;
@@ -15,56 +15,59 @@ public class Account {
         attempts = 0;
     }
 
-    public String getUserName() {
+    String getUserName() {
         return user.getFirstName() + " " + user.getLastName();
     }
 
-    public String getAccountType() {
+    String getAccountType() {
         return accountType;
     }
 
-    public String getAccountNumber() {
+    String getAccountNumber() {
         return accountNumber;
     }
 
-    public String getPinNumber() {
+    String getPinNumber() {
         return pinNumber;
     }
 
-    public double getAccountBalance() {
+    double getAccountBalance() {
         return accountBalance;
     }
 
-    public void debitAccountBalance(double transactionAmount) {
-        accountBalance = accountBalance + transactionAmount;
-        System.out.println("You have deposited " + transactionAmount +
-                "\nYour account balance is: " + accountBalance + "\n");
+    void debitAccountBalance(double transactionAmount) {
+        if (transactionAmount < 0) {
+            System.out.println("Amount must be greater than $0.00");
+        } else {
+            accountBalance = accountBalance + transactionAmount;
+            System.out.printf("You have deposited $%.2f%n%s%.2f%n", transactionAmount,
+                    "Your account balance is: $", accountBalance);
+        }
     }
 
-    public void creditAccountBalance(double transactionAmount) {
-        if (transactionAmount > accountBalance || accountBalance < 20) {
+    void creditAccountBalance(double transactionAmount) {
+        if (transactionAmount < 20) {
+            System.out.println("Amount must be at least $20");
+        }
+        else if (transactionAmount > accountBalance || accountBalance < 20) {
             System.out.println("Your account has insufficient funds for withdrawal.\n" +
                     "Your available balance is: " + accountBalance + "\n");
         } else {
             accountBalance = accountBalance - transactionAmount;
-            System.out.println("You have withdrawn " + transactionAmount +
-                    "\nYour account balance is: " + accountBalance + "\n");
+            System.out.printf("You have withdrawn $%.2f%n%s%.2f%n" , transactionAmount,
+                    "Your account balance is: $", accountBalance);
         }
     }
 
-    public boolean isAccountLocked() {
+    boolean isAccountLocked() {
         return attempts >= 3;
     }
 
-    public int getAttempts() {
-        return attempts;
-    }
-
-    public void resetAttempts() {
+    void resetAttempts() {
         attempts = 0;
     }
 
-    public void incrementAttempts() {
+    void incrementAttempts() {
         attempts++;
     }
 }

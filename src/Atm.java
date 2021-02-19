@@ -1,6 +1,7 @@
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
-public class Atm {
+class Atm {
     private boolean isUserAuthenticated;
     private boolean accountExists;
     private Database database;
@@ -13,12 +14,13 @@ public class Atm {
         TRANSACTION,
         CHECK_BALANCE,
         MAKE_DEPOSIT,
+        OPTIONS_AFTER_DEPOSIT,
         WITHDRAWAL_OPTIONS,
         CUSTOM_WITHDRAWAL,
         OPTIONS_AFTER_WITHDRAWAL;
     }
 
-    public Atm() {
+    Atm() {
         currentScreen = AtmScreens.LOGIN;
         isUserAuthenticated = false;
         accountExists = false;
@@ -30,7 +32,7 @@ public class Atm {
     /**
      * Each screen will prompt user for a response
      */
-    public void run() {
+    void run() {
         while (true) {
             switch (currentScreen) {
                 case LOGIN:
@@ -44,6 +46,9 @@ public class Atm {
                     break;
                 case MAKE_DEPOSIT:
                     promptForDepositScreen();
+                    break;
+                case OPTIONS_AFTER_DEPOSIT:
+                    promptAfterDeposit();
                     break;
                 case WITHDRAWAL_OPTIONS:
                     promptForWithdrawalDenominations();
@@ -70,7 +75,7 @@ public class Atm {
      * the account number and the account is not locked, the user will be asked to input their pin number.
      * The user is given 3 attempts before the account they are trying to access is locked.
      */
-    public void authenticateAccount() {
+    void authenticateAccount() {
         System.out.println("Please enter account number:");
         String acctNumber = input.next();
         accountExists = database.verifyAccountNumber(acctNumber);
@@ -112,74 +117,110 @@ public class Atm {
     /**
      * User is asked whether they want to check balance, make a deposit, withdraw money, or exit.
      */
-    public void promptForTransactionMenu() {
+    void promptForTransactionMenu() {
         System.out.println("Press 1 to check account balance \n" +
                 "Press 2 to make a deposit \n" +
                 "Press 3 to make a withdrawal \n" +
                 "Press 4 to exit");
 
-        int selection = input.nextInt();
-
-        if (selection == 1) {
-            currentScreen = AtmScreens.CHECK_BALANCE;
-        } else if (selection == 2) {
-            currentScreen = AtmScreens.MAKE_DEPOSIT;
-        } else if (selection == 3) {
-            currentScreen = AtmScreens.WITHDRAWAL_OPTIONS;
-        } else {
-            System.out.println("Goodbye " + database.accountMap.get(accountNumber).getUserName());
-            currentScreen = AtmScreens.LOGIN;
+        try {
+            int selection = input.nextInt();
+            if (selection == 1) {
+                currentScreen = AtmScreens.CHECK_BALANCE;
+            } else if (selection == 2) {
+                currentScreen = AtmScreens.MAKE_DEPOSIT;
+            } else if (selection == 3) {
+                currentScreen = AtmScreens.WITHDRAWAL_OPTIONS;
+            } else if (selection == 4) {
+                System.out.println("You have been logged out.");
+                currentScreen = AtmScreens.LOGIN;
+            } else {
+                System.out.println("Invalid input. Please try again.");
+                return;
+            }
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input. Please try again.");
+            input.next();
         }
     }
 
     /**
      * Displays account balance and given the option to go back to main menu or exit.
      */
-    public void promptForCheckBalanceScreen() {
-        System.out.println("Your current account balance is: " + database.checkBalance(accountNumber) +
-                "\n\nPress 1 to go back to main menu \n" +
-                "Press 2 to exit");
+    void promptForCheckBalanceScreen() {
+        System.out.printf("Your current account balance is: $%.2f%n%s%n%s%n", database.checkBalance(accountNumber),
+                "Press 1 to go back to main main", "Press 2 to exit");
 
-        int selection = input.nextInt();
-
-        if (selection == 1) {
-            currentScreen = AtmScreens.TRANSACTION;
-        } else {
-            currentScreen = AtmScreens.LOGIN;
+        try {
+            int selection = input.nextInt();
+            if (selection == 1) {
+                currentScreen = AtmScreens.TRANSACTION;
+            } else if (selection == 2) {
+                System.out.println("You have been logged out.");
+                currentScreen = AtmScreens.LOGIN;
+            } else {
+                System.out.println("Invalid input. Please try again.");
+                return;
+            }
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input. Please try again.");
+            input.next();
         }
     }
 
     /**
      * Asks user for the amount the would like to deposit and tells them the new balance afterwards
      */
-    public void promptForDepositScreen() {
+    void promptForDepositScreen() {
         System.out.println("Please enter deposit amount: ");
 
-        double depositAmount = input.nextInt();
+        try {
+            double depositAmount = input.nextDouble();
+            database.deposit(accountNumber, depositAmount);
+            if (depositAmount < 0) {
+                return;
+            }
+            currentScreen = AtmScreens.OPTIONS_AFTER_DEPOSIT;
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input. Please try again.");
+            input.next();
+            return;
+        }
+    }
 
-        database.deposit(accountNumber, depositAmount);
-
+    /**
+     * Asks user what they want to do after they have made a deposit
+     */
+    void promptAfterDeposit() {
         System.out.println("Press 1 to make another deposit \n" +
                 "Press 2 to go back to main menu \n" +
                 "Press 3 to exit");
 
-        int selection = input.nextInt();
+        try {
+            int selection = input.nextInt();
 
-        if (selection == 1) {
-            currentScreen = AtmScreens.MAKE_DEPOSIT;
-        } else if (selection == 2){
-            currentScreen = AtmScreens.TRANSACTION;
-        } else {
-            currentScreen = AtmScreens.LOGIN;
+            if (selection == 1) {
+                currentScreen = AtmScreens.MAKE_DEPOSIT;
+            } else if (selection == 2){
+                currentScreen = AtmScreens.TRANSACTION;
+            } else if (selection == 3) {
+                System.out.println("You have been logged out.");
+                currentScreen = AtmScreens.LOGIN;
+            } else {
+                System.out.println("Invlid input. Please try again.");
+                return;
+            }
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input. Please try again.");
+            input.next();
         }
-
     }
 
     /**
      * Gives user a few choices of how much to withdraw along with option to make a specific withdrawal amount and to
      * go back to previous screen. New account balance will be displayed after withdrawal.
      */
-    public void promptForWithdrawalDenominations() {
+    void promptForWithdrawalDenominations() {
         System.out.println("Press 1 to withdraw $20 \n" +
                 "Press 2 to withdraw $40 \n" +
                 "Press 3 to withdraw $60 \n" +
@@ -189,39 +230,47 @@ public class Atm {
                 "Press 7 to choose withdrawal amount \n" +
                 "Press 8 to go back to main menu");
 
-        int selection = input.nextInt();
+        try {
+            int selection = input.nextInt();
 
-        switch (selection) {
-            case 1:
-                currentScreen = AtmScreens.OPTIONS_AFTER_WITHDRAWAL;
-                database.withdraw(accountNumber, 20);
-                break;
-            case 2:
-                currentScreen = AtmScreens.OPTIONS_AFTER_WITHDRAWAL;
-                database.withdraw(accountNumber, 40);
-                break;
-            case 3:
-                currentScreen = AtmScreens.OPTIONS_AFTER_WITHDRAWAL;
-                database.withdraw(accountNumber, 60);
-                break;
-            case 4:
-                currentScreen = AtmScreens.OPTIONS_AFTER_WITHDRAWAL;
-                database.withdraw(accountNumber, 80);
-                break;
-            case 5:
-                currentScreen = AtmScreens.OPTIONS_AFTER_WITHDRAWAL;
-                database.withdraw(accountNumber, 100);
-                break;
-            case 6:
-                currentScreen = AtmScreens.OPTIONS_AFTER_WITHDRAWAL;
-                database.withdraw(accountNumber, 200);
-                break;
-            case 7:
-                currentScreen = AtmScreens.CUSTOM_WITHDRAWAL;
-                break;
-            case 8:
-                currentScreen = AtmScreens.TRANSACTION;
-                break;
+            switch (selection) {
+                case 1:
+                    currentScreen = AtmScreens.OPTIONS_AFTER_WITHDRAWAL;
+                    database.withdraw(accountNumber, 20);
+                    break;
+                case 2:
+                    currentScreen = AtmScreens.OPTIONS_AFTER_WITHDRAWAL;
+                    database.withdraw(accountNumber, 40);
+                    break;
+                case 3:
+                    currentScreen = AtmScreens.OPTIONS_AFTER_WITHDRAWAL;
+                    database.withdraw(accountNumber, 60);
+                    break;
+                case 4:
+                    currentScreen = AtmScreens.OPTIONS_AFTER_WITHDRAWAL;
+                    database.withdraw(accountNumber, 80);
+                    break;
+                case 5:
+                    currentScreen = AtmScreens.OPTIONS_AFTER_WITHDRAWAL;
+                    database.withdraw(accountNumber, 100);
+                    break;
+                case 6:
+                    currentScreen = AtmScreens.OPTIONS_AFTER_WITHDRAWAL;
+                    database.withdraw(accountNumber, 200);
+                    break;
+                case 7:
+                    currentScreen = AtmScreens.CUSTOM_WITHDRAWAL;
+                    break;
+                case 8:
+                    currentScreen = AtmScreens.TRANSACTION;
+                    break;
+                default:
+                    System.out.println("Invalid input. Please try again");
+                    return;
+            }
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input. Please try again");
+            input.next();
         }
     }
 
@@ -229,44 +278,58 @@ public class Atm {
      * Asks user to withdraw an amount that's not listed in the WITHDRAWAL_OPTIONS screen. Amount has to be in
      * denominations of $20
      */
-    public void promptCustomWithdrawal() {
+    void promptCustomWithdrawal() {
         System.out.println("Withdrawal amount must be denominations of $20 \n" + "Please enter withdrawal amount: ");
 
-        double amount = input.nextInt();
+        try {
+            double amount = input.nextDouble();
+            currentScreen = AtmScreens.WITHDRAWAL_OPTIONS;
 
-        currentScreen = AtmScreens.WITHDRAWAL_OPTIONS;
-
-        if (amount % 20 != 0) {
-            currentScreen = AtmScreens.CUSTOM_WITHDRAWAL;
-        } else {
-            currentScreen = AtmScreens.OPTIONS_AFTER_WITHDRAWAL;
-            database.withdraw(accountNumber, amount);
+            if (amount % 20 != 0) {
+                currentScreen = AtmScreens.CUSTOM_WITHDRAWAL;
+            } else {
+                currentScreen = AtmScreens.OPTIONS_AFTER_WITHDRAWAL;
+                database.withdraw(accountNumber, amount);
+            }
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input. Please try again");
+            input.next();
         }
     }
 
     /**
      * Asks user what they want to do after they have made a withdrawal
      */
-    public void promptAfterWithdrawal() {
+    void promptAfterWithdrawal() {
         System.out.println("Press 1 to make another withdrawal \n" +
                 "Press 2 to go back to main menu \n" +
                 "Press 3 to exit");
 
-        int selection = input.nextInt();
+        try {
+            int selection = input.nextInt();
 
-        if (selection == 1) {
-            currentScreen = AtmScreens.WITHDRAWAL_OPTIONS;
-        } else if (selection == 2){
-            currentScreen = AtmScreens.TRANSACTION;
-        } else {
-            currentScreen = AtmScreens.LOGIN;
+            if (selection == 1) {
+                currentScreen = AtmScreens.WITHDRAWAL_OPTIONS;
+            } else if (selection == 2){
+                currentScreen = AtmScreens.TRANSACTION;
+            } else if (selection == 3) {
+                System.out.println("You have been logged out.");
+                currentScreen = AtmScreens.LOGIN;
+            } else {
+                System.out.println("Invlid input. Please try again.");
+                return;
+            }
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input. Please try again");
+            input.next();
         }
     }
 
     /**
      * Displays randomly generated account numbers to test before run() is called
      */
-    public void displayAccountsTest() {
-        System.out.println(database.accountNumbers);
+    void displayAccountsTest() {
+//        System.out.println(database.accountNumbers);
+        System.out.println(database.accountMap.keySet());
     }
 }
