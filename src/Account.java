@@ -48,10 +48,11 @@ class Account {
     void creditAccountBalance(double transactionAmount) {
         if (transactionAmount < 20) {
             System.out.println("Amount must be at least $20");
-        }
-        else if (transactionAmount > accountBalance || accountBalance < 20) {
+        } else if (transactionAmount > accountBalance || accountBalance < 20) {
             System.out.println("Your account has insufficient funds for withdrawal.\n" +
                     "Your available balance is: " + accountBalance + "\n");
+        } else if (transactionAmount % 20 != 0) {
+            System.out.println("Amount must be in $20 denominations");
         } else {
             accountBalance = accountBalance - transactionAmount;
             System.out.printf("You have withdrawn $%.2f%n%s%.2f%n" , transactionAmount,

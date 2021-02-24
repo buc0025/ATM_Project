@@ -2,12 +2,12 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 class Atm {
-    private boolean isUserAuthenticated;
     private boolean accountExists;
     private Database database;
     private Scanner input;
     private String accountNumber;
     private AtmScreens currentScreen;
+    private UserInputInterface userInputInterface;
 
     enum AtmScreens {
         LOGIN,
@@ -20,13 +20,13 @@ class Atm {
         OPTIONS_AFTER_WITHDRAWAL;
     }
 
-    Atm() {
+    Atm(UserInputInterface userInputInterface) {
         currentScreen = AtmScreens.LOGIN;
-        isUserAuthenticated = false;
         accountExists = false;
         database = new Database();
         input = new Scanner(System.in);
         accountNumber = "";
+        this.userInputInterface = userInputInterface;
     }
 
     /**
@@ -331,5 +331,9 @@ class Atm {
     void displayAccountsTest() {
 //        System.out.println(database.accountNumbers);
         System.out.println(database.accountMap.keySet());
+    }
+
+    AtmScreens getCurrentScreen() {
+        return currentScreen;
     }
 }
