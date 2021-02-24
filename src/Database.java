@@ -13,7 +13,7 @@ class Database {
         AccountHolder accountHolder1 = new AccountHolder("Stanley", "Yang");
         Account account1 = new Account(/*accountHolder*/accountHolder1,/*accountType*/"savings", /*accountNumber*/"1",
                 /*pinNumber*/"11", /*accountBalance*/100);
-        Account account2 = new Account(/*accountHolder*/accountHolder1,/*accountType*/"savings", /*accountNumber*/createAccountNumber(),
+        Account account2 = new Account(/*accountHolder*/accountHolder1,/*accountType*/"savings", /*accountNumber*/"23",
                 /*pinNumber*/"22", /*accountBalance*/150);
 
         accountHolder1.addAccount(account2);
