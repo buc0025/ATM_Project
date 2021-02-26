@@ -6,6 +6,7 @@ class AtmTest {
 
     @Test
     void authenticateAccount() {
+<<<<<<< HEAD
         TestInput testInput = new TestInput();
 //        Atm atm = new Atm(new TestInput());
         Atm atm = new Atm(testInput);
@@ -17,6 +18,8 @@ class AtmTest {
         SystemInput systemInput = new SystemInput();
         systemInput.getString();
         assertEquals(Atm.AtmScreens.CHECK_BALANCE, atm.getCurrentScreen());
+=======
+>>>>>>> 929f01d2f578da5eaa33fd07cb78b414ef7a5c95
     }
 
     @Test
