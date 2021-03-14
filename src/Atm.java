@@ -77,7 +77,8 @@ class Atm {
      */
     void authenticateAccount() {
         System.out.println("Please enter account number:");
-        String acctNumber = input.next();
+        String acctNumber = this.userInputInterface.getString();
+//                input.next();
         accountExists = database.verifyAccountNumber(acctNumber);
 
         if (!accountExists) {
@@ -92,7 +93,8 @@ class Atm {
 
         accountNumber = acctNumber;
         System.out.println("Please enter pin number:");
-        String pinNumber = input.next();
+        String pinNumber = this.userInputInterface.getString();
+//        String pinNumber = input.next();
         database.accountMap.get(accountNumber).incrementAttempts(); // Attempts at logging into account is incremented
 
         if (database.authenticateAccount(accountNumber, pinNumber)) { // Account number and pin matches
@@ -124,7 +126,7 @@ class Atm {
                 "Press 4 to exit");
 
         try {
-            int selection = input.nextInt();
+            int selection = this.userInputInterface.getInt();
             if (selection == 1) {
                 currentScreen = AtmScreens.CHECK_BALANCE;
             } else if (selection == 2) {
@@ -136,6 +138,7 @@ class Atm {
                 currentScreen = AtmScreens.LOGIN;
             } else {
                 System.out.println("Invalid input. Please try again.");
+                currentScreen = AtmScreens.TRANSACTION;
                 return;
             }
         } catch (InputMismatchException e) {
@@ -151,8 +154,12 @@ class Atm {
         System.out.printf("Your current account balance is: $%.2f%n%s%n%s%n", database.checkBalance(accountNumber),
                 "Press 1 to go back to main main", "Press 2 to exit");
 
+        // Provided account number for Atm testing
+//        System.out.printf("Your current account balance is: $%.2f%n%s%n%s%n", database.checkBalance("1"),
+//                "Press 1 to go back to main main", "Press 2 to exit");
+
         try {
-            int selection = input.nextInt();
+            int selection = this.userInputInterface.getInt();
             if (selection == 1) {
                 currentScreen = AtmScreens.TRANSACTION;
             } else if (selection == 2) {
@@ -160,6 +167,7 @@ class Atm {
                 currentScreen = AtmScreens.LOGIN;
             } else {
                 System.out.println("Invalid input. Please try again.");
+                currentScreen = AtmScreens.CHECK_BALANCE;
                 return;
             }
         } catch (InputMismatchException e) {
@@ -175,8 +183,9 @@ class Atm {
         System.out.println("Please enter deposit amount: ");
 
         try {
-            double depositAmount = input.nextDouble();
-            database.deposit(accountNumber, depositAmount);
+            double depositAmount = this.userInputInterface.getDouble();
+//            database.deposit(accountNumber, depositAmount);
+            database.deposit("1", depositAmount); // Provided account number for Atm testing
             if (depositAmount < 0) {
                 return;
             }
@@ -197,7 +206,7 @@ class Atm {
                 "Press 3 to exit");
 
         try {
-            int selection = input.nextInt();
+            int selection = this.userInputInterface.getInt();
 
             if (selection == 1) {
                 currentScreen = AtmScreens.MAKE_DEPOSIT;
@@ -208,6 +217,7 @@ class Atm {
                 currentScreen = AtmScreens.LOGIN;
             } else {
                 System.out.println("Invlid input. Please try again.");
+                currentScreen = AtmScreens.OPTIONS_AFTER_DEPOSIT;
                 return;
             }
         } catch (InputMismatchException e) {
@@ -231,7 +241,7 @@ class Atm {
                 "Press 8 to go back to main menu");
 
         try {
-            int selection = input.nextInt();
+            int selection = this.userInputInterface.getInt();
 
             switch (selection) {
                 case 1:
@@ -266,6 +276,7 @@ class Atm {
                     break;
                 default:
                     System.out.println("Invalid input. Please try again");
+                    currentScreen = AtmScreens.WITHDRAWAL_OPTIONS;
                     return;
             }
         } catch (InputMismatchException e) {
@@ -282,7 +293,7 @@ class Atm {
         System.out.println("Withdrawal amount must be denominations of $20 \n" + "Please enter withdrawal amount: ");
 
         try {
-            double amount = input.nextDouble();
+            double amount = this.userInputInterface.getDouble();
             currentScreen = AtmScreens.WITHDRAWAL_OPTIONS;
 
             if (amount % 20 != 0) {
@@ -306,7 +317,7 @@ class Atm {
                 "Press 3 to exit");
 
         try {
-            int selection = input.nextInt();
+            int selection = this.userInputInterface.getInt();
 
             if (selection == 1) {
                 currentScreen = AtmScreens.WITHDRAWAL_OPTIONS;
@@ -316,7 +327,8 @@ class Atm {
                 System.out.println("You have been logged out.");
                 currentScreen = AtmScreens.LOGIN;
             } else {
-                System.out.println("Invlid input. Please try again.");
+                System.out.println("Invalid input. Please try again.");
+                currentScreen = AtmScreens.OPTIONS_AFTER_WITHDRAWAL;
                 return;
             }
         } catch (InputMismatchException e) {

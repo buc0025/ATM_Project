@@ -35,7 +35,6 @@ class DatabaseTest {
     }
 
     @Test
-<<<<<<< HEAD
         // withdraw() with incorrect denominations, separate withdrawal() for correct withdrawal amount
     void withdrawValidAmount() {
         double balance = database.checkBalance("1");
@@ -69,15 +68,6 @@ class DatabaseTest {
         double balance = database.checkBalance("1");
         database.deposit("1", -10);
         assertEquals(balance, database.checkBalance("1"));
-=======
-    void withdraw() {
-        database.withdraw("1", 1);
-        assertEquals("asdf", database.withdraw("1", 1));
-    }
-
-    @Test
-    void deposit() {
->>>>>>> 929f01d2f578da5eaa33fd07cb78b414ef7a5c95
     }
 
     @Test

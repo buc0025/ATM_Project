@@ -6,6 +6,9 @@ public class TestInput implements UserInputInterface {
     public int[] intInputs;
     public int intIndex;
 
+    public double[] doubleInputs;
+    public int doubleIndex;
+
     @Override
     public String getString() {
         return stringInputs[stringsIndex++];
@@ -14,5 +17,10 @@ public class TestInput implements UserInputInterface {
     @Override
     public int getInt() {
         return intInputs[intIndex++];
+    }
+
+    @Override
+    public double getDouble() {
+        return doubleInputs[doubleIndex++];
     }
 }

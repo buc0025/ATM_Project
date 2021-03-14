@@ -1,13 +1,21 @@
+import java.util.Scanner;
+
 public class SystemInput implements UserInputInterface {
-    TestInput testInput = new TestInput();
+    Scanner scanner = new Scanner(System.in);
 
     @Override
     public String getString() {
-        return testInput.getString();
+        return scanner.next();
     }
 
     @Override
     public int getInt() {
-        return testInput.getInt();
+        return scanner.nextInt();
     }
+
+    @Override
+    public double getDouble() {
+        return scanner.nextDouble();
+    }
+
 }
